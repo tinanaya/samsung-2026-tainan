@@ -449,6 +449,9 @@
             
             <p id="congrats-text" class="text-yellow-400 font-bold mb-2 animate-bounce text-xl">恭喜獲得！</p>
             
+            <!-- New: Serial Number Display -->
+            <p id="serial-display" class="text-xs text-yellow-300 font-mono mb-2 hidden"></p>
+
             <!-- Dynamic Button: Acts as Redeem first, then Reset -->
             <button id="action-btn" class="w-full btn-gold hover:opacity-90 text-red-900 font-bold py-3 px-4 rounded border border-yellow-200 mb-2 text-lg shadow-lg">
                 立即兌換 (工作人員專用)
@@ -515,6 +518,7 @@
         const redeemLoading = document.getElementById('redeem-loading');
         const redeemDetails = document.getElementById('redeem-details');
         const redeemTime = document.getElementById('redeem-time');
+        const serialDisplay = document.getElementById('serial-display'); // Serial element
 
         // Modal Elements
         const modal = document.getElementById('custom-modal');
@@ -534,6 +538,7 @@
         // LocalStorage Keys
         const LS_KEY_PRIZE = 'samsung_2026_prize';
         const LS_KEY_REDEEMED = 'samsung_2026_redeemed_at';
+        const LS_KEY_SERIAL = 'samsung_2026_serial';
         
         // --- Initialization ---
         window.addEventListener('load', () => {
@@ -585,6 +590,7 @@
         function checkHistory() {
             const savedPrize = localStorage.getItem(LS_KEY_PRIZE);
             const redeemedAt = localStorage.getItem(LS_KEY_REDEEMED);
+            const savedSerial = localStorage.getItem(LS_KEY_SERIAL);
 
             if (savedPrize) {
                 prizeResult.innerText = savedPrize;
@@ -596,6 +602,12 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height); 
                 
                 claimSection.classList.remove('hidden');
+
+                // Display Serial if available
+                if(savedSerial) {
+                    serialDisplay.innerText = `核銷序號: ${savedSerial}`;
+                    serialDisplay.classList.remove('hidden');
+                }
                 
                 if (redeemedAt) {
                     switchToResetState(redeemedAt);
@@ -626,6 +638,7 @@
                     () => {
                         localStorage.removeItem(LS_KEY_PRIZE);
                         localStorage.removeItem(LS_KEY_REDEEMED);
+                        localStorage.removeItem(LS_KEY_SERIAL); // Clear serial on reset
                         location.reload();
                     }
                 );
@@ -634,6 +647,7 @@
 
         async function proceedRedeem() {
             const prizeName = prizeResult.innerText;
+            const serial = localStorage.getItem(LS_KEY_SERIAL) || ''; // Get serial for redemption
             
             // UI Loading
             actionBtn.classList.add('hidden'); // Hide button
@@ -653,7 +667,7 @@
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'redeem', prize: prizeName }),
+                    body: JSON.stringify({ action: 'redeem', prize: prizeName, serial: serial }), // Send Serial
                     redirect: "follow", 
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                 });
@@ -773,6 +787,14 @@
 
         function handleSuccess(data) {
             localStorage.setItem(LS_KEY_PRIZE, data.prize);
+            // [New] Save serial to localStorage
+            if(data.serial) {
+                localStorage.setItem(LS_KEY_SERIAL, data.serial);
+                // Update UI immediately
+                serialDisplay.innerText = `核銷序號: ${data.serial}`;
+                serialDisplay.classList.remove('hidden');
+            }
+
             prizeResult.innerText = data.prize;
             // Red text for prize, gray for consolation
             prizeResult.style.color = data.prize.includes("銘謝") || data.prize.includes("再接再厲") ? "#666" : "#b71c1c";
@@ -801,8 +823,10 @@
                     ];
                     // Weighted random for demo
                     const randomPrize = demoPrizes[Math.floor(Math.random() * demoPrizes.length)];
+                    // Generate fake serial for demo
+                    const fakeSerial = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
                     
-                    handleSuccess({ status: 'success', prize: randomPrize });
+                    handleSuccess({ status: 'success', prize: randomPrize, serial: fakeSerial });
                 }, 1500);
                 return; 
             }
