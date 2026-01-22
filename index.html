@@ -25,7 +25,7 @@
             overflow-x: hidden;
             min-height: 100vh;
             
-            /* --- 背景設計：純粹深紅漸層 --- */
+            /* --- 背景設計：純粹深紅漸層 (移除所有紋理) --- */
             background-image: 
                 /* 僅保留徑向漸層，營造聚焦感與高級感 */
                 radial-gradient(circle at 50% 40%, #B22222 0%, #4A0404 90%);
@@ -43,7 +43,7 @@
             aspect-ratio: 1/1; 
             z-index: 0;
             pointer-events: none;
-            opacity: 0.6; 
+            opacity: 0.6; /* 調整透明度 */
             
             /* 1. 設定遮罩圖片 (馬的剪影) */
             -webkit-mask-image: url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/horse.svg');
@@ -494,7 +494,7 @@
         // CONFIG: 填入您部署好的 GAS Web App URL
         const API_URL = "YOUR_GAS_WEB_APP_URL_HERE";
         // CONFIG: 填入您的 Google Sheet 編輯網址
-        const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1BBIEFIL7lRx8NEqsd0M67hXEZJ4rqwcRY1UEfcjm8IU/edit?usp=sharing";
+        const GOOGLE_SHEET_URL = "YOUR_GOOGLE_SHEET_URL_HERE";
         
         const canvas = document.getElementById('scratch-canvas');
         const ctx = canvas.getContext('2d');
@@ -642,7 +642,7 @@
             let timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
 
             // Demo Mode Check
-            if (API_URL.includes("https://script.google.com/macros/s/AKfycbztniQphgKlT680wLqf4flRllzJh8gltoP3vzmkV7KccVAlCfxlcg_jGl35CWye5Uya2g/exec")) {
+            if (API_URL.includes("YOUR_GAS_WEB_APP_URL_HERE")) {
                 console.warn("Demo Mode: Simulating Redemption");
                 setTimeout(() => {
                     completeRedemption(timeStr);
@@ -800,7 +800,7 @@
                         "🎁 參加獎：旅行收納袋組"
                     ];
                     // Weighted random for demo
-                    const randomPrize = demoPrizes[Math.floor(Math.random() * demoPrizes.length)] + " (Demo)";
+                    const randomPrize = demoPrizes[Math.floor(Math.random() * demoPrizes.length)];
                     
                     handleSuccess({ status: 'success', prize: randomPrize });
                 }, 1500);
