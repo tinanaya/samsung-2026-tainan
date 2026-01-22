@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 三星南紡金馬迎春刮刮樂</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入書法字體：Ma Shan Zheng -->
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <!-- 引入 Confetti 特效 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* Lunar New Year Red & Gold Palette - 宮廷御用配色 */
+        :root {
+            --cny-red-deep: #4A0404; /* Dark Maroon */
+            --cny-red-main: #8B0000; /* Deep Red */
+            --cny-gold: #FFD700;
+            --cny-gold-dim: #C5A059;
+        }
+
+        body {
+            background-color: var(--cny-red-deep);
+            color: white;
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            
+            /* --- 背景設計：純粹深紅漸層 --- */
+            background-image: 
+                /* 僅保留徑向漸層，營造聚焦感與高級感 */
+                radial-gradient(circle at 50% 40%, #B22222 0%, #4A0404 90%);
+            background-size: 100% 100%;
+        }
+
+        /* --- Realistic Golden Horse using Masking (Center) --- */
+        .horse-mask-container {
+            position: fixed;
+            top: 55%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            max-width: 500px;
+            aspect-ratio: 1/1; 
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6; 
+            
+            /* 1. 設定遮罩圖片 (馬的剪影) */
+            -webkit-mask-image: url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/horse.svg');
+            mask-image: url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/horse.svg');
+            
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+
+            /* 2. 設定背景為金色漸層 (只會顯示在遮罩區域內) */
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            
+            /* 3. 增加立體感濾鏡 */
+            filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+        }
+
+        /* 暗角效果 */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(transparent 50%, rgba(30, 0, 0, 0.9) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- 左上角春聯加鞭炮裝飾 --- */
+        .festive-decoration {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 50; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        /* 斗方春聯 */
+        .couplet-container {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            margin-bottom: -5px; 
+            z-index: 2;
+        }
+
+        .couplet-diamond {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            border: 2px solid #FFD700;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        /* Calligraphy Font Style */
+        .couplet-char {
+            transform: rotate(-45deg);
+            font-family: 'Ma Shan Zheng', "Xingkai SC", "STXingkai", serif;
+            font-size: 32px;
+            color: #FFD700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            margin-top: -3px; 
+        }
+
+        /* 鞭炮串 */
+        .firecrackers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: sway 3s infinite ease-in-out alternate;
+            transform-origin: top center;
+            z-index: 1;
+        }
+
+        .firecrackers .string {
+            width: 2px;
+            height: 10px;
+            background-color: #FFD700;
+        }
+
+        .cracker {
+            width: 12px;
+            height: 20px;
+            background: linear-gradient(to right, #ef5350, #c62828, #ef5350);
+            margin-top: -4px; 
+            border-radius: 2px;
+            position: relative;
+            border-top: 1px solid #FFD700;
+            border-bottom: 1px solid #FFD700;
+        }
+        
+        .cracker:nth-child(2n) { transform: rotate(15deg) translateX(4px); }
+        .cracker:nth-child(2n+1) { transform: rotate(-15deg) translateX(-4px); }
+        
+        .tassel {
+            width: 4px;
+            height: 20px;
+            background: #FFD700;
+            margin-top: -2px;
+            border-radius: 0 0 2px 2px;
+        }
+
+        @keyframes sway {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        /* Scratch Card Container */
+        .scratch-container {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.3);
+            border: 4px solid var(--cny-gold);
+            background-color: #fff;
+        }
+
+        .prize-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #fff 0%, #fff8e1 100%);
+            color: #b71c1c;    
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            z-index: 1;
+            line-height: 1.3;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: grab;
+        }
+        
+        #scratch-canvas {
+            z-index: 2;
+        }
+
+        /* FX Canvas for Gold Dust */
+        #fx-canvas {
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Galaxy AI Star Icon */
+        .ai-star {
+            color: var(--cny-gold);
+            animation: pulse 2s infinite;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .btn-gold {
+            background: linear-gradient(to bottom, #FFD700, #FFA500);
+            color: #8B0000;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #b8860b, 0 5px 10px rgba(0,0,0,0.3);
+            transition: all 0.1s ease;
+            border: 1px solid #FFF;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .btn-gold:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #b8860b, 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        /* Red Button for Reset */
+        .btn-reset {
+            background: linear-gradient(45deg, #424242, #212121) !important;
+            color: white !important;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            border-color: #9e9e9e !important;
+        }
+
+        /* Loader */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--cny-gold);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 10px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: #4a0404; /* Dark red background for modal */
+            border: 2px solid var(--cny-gold);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* Prize Box Styling */
+        .prize-box {
+            background-color: rgba(100, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
+        }
+        
+        /* Admin Link Style */
+        .admin-link {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.7rem;
+            text-decoration: none;
+            transition: color 0.3s;
+            margin-top: 10px;
+            display: inline-block;
+            cursor: pointer; /* Ensure pointer cursor */
+        }
+        .admin-link:hover {
+            color: rgba(255, 215, 0, 0.8);
+        }
+    </style>
+</head>
+<body class="pb-10 relative">
+
+    <!-- Define SVG Gradient for Gold -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                <stop offset="25%" style="stop-color:#FDB931;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#DAA520;stop-opacity:1" />
+                <stop offset="75%" style="stop-color:#B8860B;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- 背景圖層 -->
+    
+    <!-- 1. 中央金馬圖騰 (使用 mask-image 技術渲染的真實金馬剪影) -->
+    <div class="horse-mask-container"></div>
+
+    <!-- 3. 左上角裝飾：斗方春聯 + 鞭炮 -->
+    <div class="festive-decoration">
+        <div class="couplet-container">
+            <div class="couplet-diamond">
+                <span class="couplet-char">春</span>
+            </div>
+        </div>
+        <div class="firecrackers">
+            <div class="string"></div>
+            <!-- Firecrackers string elements -->
+            <div class="cracker"></div>
+            <div class="cracker"></div>
+            <div class="cracker"></div>
+            <div class="cracker"></div>
+            <div class="cracker"></div>
+            <div class="cracker"></div>
+            <div class="tassel"></div>
+        </div>
+    </div>
+
+    <div class="vignette"></div>
+
+    <!-- Hero Section -->
+    <header class="text-center pt-8 pb-4 px-4 relative z-10">
+        <div class="inline-flex items-center justify-center mb-2">
+            <span class="text-3xl mr-2 ai-star">✦</span>
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+                2026 金馬迎春
+            </h1>
+            <span class="text-3xl ml-2 ai-star">✦</span>
+        </div>
+        <h2 class="text-xl text-yellow-100 tracking-wider mb-4 font-light drop-shadow-md">SAMSUNG 台南南紡旗艦體驗館</h2>
+    </header>
+
+    <!-- Main Content Card -->
+    <main class="max-w-md mx-auto bg-red-950 bg-opacity-80 rounded-2xl p-6 shadow-2xl backdrop-blur-sm border border-red-700 m-4 relative z-10">
+        
+        <!-- Copywriting Section -->
+        <div class="text-center mb-6">
+            <h3 class="text-lg font-bold text-white mb-2 drop-shadow-sm">【台南星粉獨享】</h3>
+            <p class="text-yellow-100 text-sm leading-relaxed mb-4">
+                走過路過別錯過！<br>
+                來南紡三星，好運<span class="text-yellow-400 font-bold text-lg">『馬』</span>上刮出來！🐎✨
+            </p>
+            
+            <div class="bg-red-900 bg-opacity-50 p-4 rounded-lg text-xs text-left space-y-3 border-l-4 border-yellow-500 shadow-inner">
+                
+                <!-- 第一重 -->
+                <p>🧧 <strong class="text-yellow-300">第一重：</strong> Google評論或消費不限金額，即可獲得刮刮卡乙次</p>
+                
+                <!-- Prize List -->
+                <div class="prize-box">
+                    <p class="text-yellow-400 font-bold mb-2 text-center border-b border-red-700 pb-1">🏆 刮刮樂獎項一覽</p>
+                    <ul class="space-y-1 text-gray-200 pl-2">
+                        <li>🥇 <span class="text-white font-bold">金馬獎</span>：$1,000 💵</li>
+                        <li>🥈 <span class="text-white font-bold">銀馬獎</span>：$800 💵</li>
+                        <li>🥉 <span class="text-white font-bold">銅馬獎</span>：$500 💵</li>
+                        <li class="flex items-start">
+                            <span class="mr-1">🎁</span>
+                            <div>
+                                <span class="text-white font-bold">參加獎</span>：<br>
+                                <span class="text-[10px] text-gray-300 block mt-1">
+                                • 餐具組+矽膠摺疊碗<br>
+                                • 捲尺+小天使吊飾<br>
+                                • 奧運托特袋<br>
+                                • 旅行收納袋組
+                                </span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 第二重 -->
+                <div class="mt-2">
+                     <p>🎁 <strong class="text-yellow-300">第二重：</strong> 購買指定機型，加碼再抽限量好禮!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scratch Card Area -->
+        <div id="game-section" class="relative mb-6">
+            <div id="loading" class="loader"></div>
+            
+            <!-- Start Button (Initially Visible) -->
+            <div id="start-overlay" class="absolute inset-0 z-30 flex items-center justify-center bg-black bg-opacity-60 rounded-xl">
+                <button id="start-btn" class="btn-gold px-8 py-3 rounded-full text-lg uppercase tracking-widest text-red-900 shadow-[0_0_15px_rgba(255,215,0,0.6)]">
+                    開始刮獎
+                </button>
+            </div>
+
+            <!-- The Scratch Container -->
+            <div class="scratch-container" id="scratch-area" style="opacity: 0.5;">
+                <div class="prize-text" id="prize-result">
+                    <!-- Prize will be injected here -->
+                    準備中...
+                </div>
+                <!-- Layer 1: The Silver Scratch Coating -->
+                <canvas id="scratch-canvas" width="300" height="150"></canvas>
+                <!-- Layer 2: The Gold Dust Effects (Pointer events none to pass clicks) -->
+                <canvas id="fx-canvas" width="300" height="150"></canvas>
+            </div>
+            <p class="text-center text-xs text-red-200 mt-2 font-light">請直接在銀色區域滑動手指刮開</p>
+        </div>
+
+        <!-- Single Action Button Section -->
+        <div id="claim-section" class="hidden text-center">
+            
+            <p id="congrats-text" class="text-yellow-400 font-bold mb-2 animate-bounce text-xl">恭喜獲得！</p>
+            
+            <!-- Dynamic Button: Acts as Redeem first, then Reset -->
+            <button id="action-btn" class="w-full btn-gold hover:opacity-90 text-red-900 font-bold py-3 px-4 rounded border border-yellow-200 mb-2 text-lg shadow-lg">
+                立即兌換 (工作人員專用)
+            </button>
+            
+            <p id="status-text" class="text-xs text-red-300 mt-2">請出示給工作人員核銷，誤按無法補發</p>
+
+            <!-- Loading for Redemption -->
+            <div id="redeem-loading" class="loader"></div>
+            
+            <!-- Done Redemption State (Details) -->
+            <div id="redeem-details" class="hidden mt-4 bg-red-900 bg-opacity-60 p-4 rounded-lg border border-red-700 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 bg-red-800 w-20 h-20 rotate-45"></div>
+                <p class="text-2xl mb-1">✅</p>
+                <p class="text-white font-bold text-lg">已完成核銷</p>
+                <p id="redeem-time" class="text-yellow-500 font-mono text-xs mt-2 border-t border-red-800 pt-2"></p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Custom Modal -->
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title" class="text-lg font-bold text-yellow-400 mb-3">提示</h3>
+            <p id="modal-message" class="text-gray-200 text-sm mb-6 leading-relaxed">確認執行此操作？</p>
+            <div class="flex space-x-3 justify-center">
+                <button id="modal-cancel" class="px-4 py-2 rounded bg-gray-700 text-gray-300 text-sm hover:bg-gray-600">取消</button>
+                <button id="modal-confirm" class="px-4 py-2 rounded bg-yellow-600 text-white text-sm font-bold hover:bg-yellow-500 border border-yellow-400">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-xs text-red-300 pb-8 relative z-10">
+        <p>© 2026 Samsung Electronics Taiwan.</p>
+        <p class="mb-4">活動詳情請洽現場工作人員</p>
+        <!-- Admin Link -->
+        <a href="#" id="admin-sheet-link" class="admin-link">📊 庫存管理後台</a>
+    </footer>
+
+    <script>
+        // CONFIG: 填入您部署好的 GAS Web App URL
+        const API_URL = "YOUR_GAS_WEB_APP_URL_HERE";
+        // CONFIG: 填入您的 Google Sheet 編輯網址
+        const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1BBIEFIL7lRx8NEqsd0M67hXEZJ4rqwcRY1UEfcjm8IU/edit?usp=sharing";
+        
+        const canvas = document.getElementById('scratch-canvas');
+        const ctx = canvas.getContext('2d');
+        const fxCanvas = document.getElementById('fx-canvas');
+        const fxCtx = fxCanvas.getContext('2d');
+        
+        const prizeResult = document.getElementById('prize-result');
+        const startBtn = document.getElementById('start-btn');
+        const startOverlay = document.getElementById('start-overlay');
+        const scratchArea = document.getElementById('scratch-area');
+        const loading = document.getElementById('loading');
+        
+        // Single Action Elements
+        const claimSection = document.getElementById('claim-section');
+        const actionBtn = document.getElementById('action-btn');
+        const statusText = document.getElementById('status-text');
+        const congratsText = document.getElementById('congrats-text');
+        const redeemLoading = document.getElementById('redeem-loading');
+        const redeemDetails = document.getElementById('redeem-details');
+        const redeemTime = document.getElementById('redeem-time');
+
+        // Modal Elements
+        const modal = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMsg = document.getElementById('modal-message');
+        const modalConfirmBtn = document.getElementById('modal-confirm');
+        const modalCancelBtn = document.getElementById('modal-cancel');
+
+        // Admin Link
+        const adminLink = document.getElementById('admin-sheet-link');
+
+        let isDrawing = false;
+        let isRevealed = false;
+        let particles = [];
+        let modalCallback = null; // To store function to run on confirm
+
+        // LocalStorage Keys
+        const LS_KEY_PRIZE = 'samsung_2026_prize';
+        const LS_KEY_REDEEMED = 'samsung_2026_redeemed_at';
+        
+        // --- Initialization ---
+        window.addEventListener('load', () => {
+            initCanvas();
+            checkHistory();
+        });
+
+        // --- Admin Link Logic ---
+        adminLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL !== "YOUR_GOOGLE_SHEET_URL_HERE") {
+                window.open(GOOGLE_SHEET_URL, '_blank');
+            } else {
+                showModal('設定提醒', '請先在程式碼中填入您的 Google Sheet 網址 (GOOGLE_SHEET_URL)，才能開啟後台。', false);
+            }
+        });
+
+        // --- Custom Modal Logic ---
+        function showModal(title, message, isConfirmType = true, onConfirm = null) {
+            modalTitle.innerText = title;
+            modalMsg.innerText = message;
+            modalCallback = onConfirm;
+            
+            if(isConfirmType) {
+                modalCancelBtn.style.display = 'block';
+                modalConfirmBtn.innerText = "確認";
+                modalConfirmBtn.classList.remove('w-full');
+            } else {
+                modalCancelBtn.style.display = 'none';
+                modalConfirmBtn.innerText = "關閉";
+                modalConfirmBtn.classList.add('w-full');
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function hideModal() {
+            modal.classList.remove('active');
+            modalCallback = null;
+        }
+
+        modalCancelBtn.addEventListener('click', hideModal);
+        modalConfirmBtn.addEventListener('click', () => {
+            if (modalCallback) modalCallback();
+            hideModal();
+        });
+
+        // --- Check History ---
+        function checkHistory() {
+            const savedPrize = localStorage.getItem(LS_KEY_PRIZE);
+            const redeemedAt = localStorage.getItem(LS_KEY_REDEEMED);
+
+            if (savedPrize) {
+                prizeResult.innerText = savedPrize;
+                // Dark red text for prize result
+                prizeResult.style.color = savedPrize.includes("銘謝") || savedPrize.includes("再接再厲") ? "#666" : "#b71c1c";
+
+                startOverlay.classList.add('hidden');
+                scratchArea.style.opacity = '1';
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                
+                claimSection.classList.remove('hidden');
+                
+                if (redeemedAt) {
+                    switchToResetState(redeemedAt);
+                } else {
+                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 }, colors: ['#FFD700', '#D32F2F', '#FFFFFF'] });
+                }
+            }
+        }
+        
+        // --- Action Button Logic (Redeem -> Reset) ---
+        actionBtn.addEventListener('click', () => {
+            const currentMode = actionBtn.dataset.mode || 'redeem'; 
+
+            if (currentMode === 'redeem') {
+                // REDEEM FLOW with Custom Modal
+                showModal(
+                    '工作人員確認', 
+                    '確定要核銷此獎項嗎？\n核銷後系統將記錄，無法復原！', 
+                    true, 
+                    () => { proceedRedeem(); }
+                );
+            } else {
+                // RESET FLOW with Custom Modal
+                showModal(
+                    '重置確認',
+                    '確定要重置並讓下一位客人使用嗎？',
+                    true,
+                    () => {
+                        localStorage.removeItem(LS_KEY_PRIZE);
+                        localStorage.removeItem(LS_KEY_REDEEMED);
+                        location.reload();
+                    }
+                );
+            }
+        });
+
+        async function proceedRedeem() {
+            const prizeName = prizeResult.innerText;
+            
+            // UI Loading
+            actionBtn.classList.add('hidden'); // Hide button
+            redeemLoading.style.display = 'block'; // Show loader
+
+            let timeStr = new Date().toLocaleString('zh-TW', { hour12: false });
+
+            // Demo Mode Check
+            if (API_URL.includes("https://script.google.com/macros/s/AKfycbztniQphgKlT680wLqf4flRllzJh8gltoP3vzmkV7KccVAlCfxlcg_jGl35CWye5Uya2g/exec")) {
+                console.warn("Demo Mode: Simulating Redemption");
+                setTimeout(() => {
+                    completeRedemption(timeStr);
+                }, 1000);
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'redeem', prize: prizeName }),
+                    redirect: "follow", 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                });
+                
+                const data = await response.json();
+                
+                if(data.status === 'success') {
+                    timeStr = data.time || timeStr;
+                    completeRedemption(timeStr);
+                } else {
+                    // Fail but allow force complete
+                    showModal('核銷失敗', `伺服器回應錯誤：${data.message}\n是否強制標記為已核銷？`, true, () => {
+                        completeRedemption(timeStr + " (Offline)");
+                    });
+                    // If cancel, restore button
+                    actionBtn.classList.remove('hidden');
+                    redeemLoading.style.display = 'none';
+                }
+            } catch (e) {
+                console.error(e);
+                // Network Error
+                showModal('連線錯誤', '無法連接伺服器。\n是否改為「離線人工核銷」？', true, () => {
+                    completeRedemption(timeStr + " (Offline)");
+                });
+            }
+        }
+
+        function completeRedemption(timeStr) {
+            // Save state
+            localStorage.setItem(LS_KEY_REDEEMED, timeStr);
+            switchToResetState(timeStr);
+        }
+
+        function switchToResetState(timeStr) {
+            // Stop loading
+            redeemLoading.style.display = 'none';
+            
+            // Show Button again as Reset
+            actionBtn.classList.remove('hidden');
+            actionBtn.style.display = 'block';
+            
+            actionBtn.innerText = "重置活動 (下一位)";
+            actionBtn.classList.remove('btn-gold', 'text-black');
+            actionBtn.classList.add('btn-reset', 'text-white');
+            actionBtn.dataset.mode = 'reset';
+
+            // Show details
+            statusText.classList.add('hidden');
+            congratsText.innerText = "兌換完成";
+            congratsText.classList.remove('animate-bounce');
+            congratsText.style.color = '#4ade80';
+
+            redeemDetails.classList.remove('hidden');
+            redeemTime.innerText = `核銷時間: ${timeStr}`;
+
+            canvas.style.pointerEvents = 'none';
+        }
+
+        // --- Particle System & Scratch Logic ---
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 0.5;
+                this.color = `rgba(255, 215, 0, ${Math.random() * 0.5 + 0.5})`;
+                this.life = 1.0;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY + 0.2;
+                this.life -= 0.04; this.size *= 0.95;
+            }
+            draw() {
+                fxCtx.fillStyle = this.color; fxCtx.globalAlpha = this.life;
+                fxCtx.beginPath(); fxCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                fxCtx.fill(); fxCtx.globalAlpha = 1.0;
+            }
+        }
+
+        function handleParticles() {
+            fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(); particles[i].draw();
+                if (particles[i].life <= 0) { particles.splice(i, 1); i--; }
+            }
+            requestAnimationFrame(handleParticles);
+        }
+        handleParticles();
+
+        function initCanvas() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = '#C0C0C0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#a0a0a0'; ctx.font = '20px Arial';
+            ctx.fillText('SAMSUNG 2026', 70, 60); ctx.fillText('刮開金馬好運', 80, 90);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = 25; ctx.lineCap = 'round';
+        }
+
+        function checkScratchPercent() {
+            if (isRevealed) return;
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            let transparentPixels = 0;
+            for (let i = 0; i < pixels.length; i += 4) {
+                if (pixels[i + 3] < 128) transparentPixels++;
+            }
+            if ((transparentPixels / (pixels.length / 4)) * 100 > 50) revealPrize();
+        }
+
+        function revealPrize() {
+            isRevealed = true;
+            canvas.style.opacity = '0'; canvas.style.transition = 'opacity 0.5s ease';
+            claimSection.classList.remove('hidden');
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#D32F2F', '#FFFFFF'] });
+        }
+
+        function handleSuccess(data) {
+            localStorage.setItem(LS_KEY_PRIZE, data.prize);
+            prizeResult.innerText = data.prize;
+            // Red text for prize, gray for consolation
+            prizeResult.style.color = data.prize.includes("銘謝") || data.prize.includes("再接再厲") ? "#666" : "#b71c1c";
+            loading.style.display = 'none';
+            startOverlay.classList.add('hidden');
+            scratchArea.style.opacity = '1';
+            setupInteraction();
+        }
+
+        async function fetchPrize() {
+            if (localStorage.getItem(LS_KEY_PRIZE)) { checkHistory(); return; }
+            startBtn.classList.add('hidden');
+            loading.style.display = 'block';
+
+            if (API_URL.includes("YOUR_GAS_WEB_APP_URL_HERE")) {
+                setTimeout(() => {
+                    // Update Demo Prizes according to new user request
+                    const demoPrizes = [
+                        "🥇 金馬獎：$1,000 💵",
+                        "🥈 銀馬獎：$800 💵",
+                        "🥉 銅馬獎：$500 💵",
+                        "🎁 參加獎：餐具組+矽膠摺疊碗",
+                        "🎁 參加獎：捲尺+小天使吊飾",
+                        "🎁 參加獎：奧運托特袋",
+                        "🎁 參加獎：旅行收納袋組"
+                    ];
+                    // Weighted random for demo
+                    const randomPrize = demoPrizes[Math.floor(Math.random() * demoPrizes.length)] + " (Demo)";
+                    
+                    handleSuccess({ status: 'success', prize: randomPrize });
+                }, 1500);
+                return; 
+            }
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'draw' }),
+                    redirect: "follow", 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                });
+                const data = await response.json();
+                if (data.status === 'success') handleSuccess(data);
+                else { 
+                    showModal('錯誤', '發生錯誤: ' + data.message, false);
+                    resetUI(); 
+                }
+            } catch (error) {
+                console.error(error);
+                prizeResult.innerText = "網路異常\n請洽工作人員";
+                loading.style.display = 'none';
+                startOverlay.classList.add('hidden');
+                scratchArea.style.opacity = '1';
+                setupInteraction();
+            }
+        }
+
+        function resetUI() { loading.style.display = 'none'; startBtn.classList.remove('hidden'); }
+
+        function setupInteraction() {
+            const getPos = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                return { x, y };
+            };
+            const startDraw = (e) => { isDrawing = true; const { x, y } = getPos(e); ctx.beginPath(); ctx.moveTo(x, y); };
+            const moveDraw = (e) => {
+                if (!isDrawing || isRevealed) return; e.preventDefault();
+                const { x, y } = getPos(e); ctx.lineTo(x, y); ctx.stroke();
+                for(let i=0; i<3; i++) particles.push(new Particle(x, y));
+                checkScratchPercent();
+            };
+            const endDraw = () => { isDrawing = false; };
+            canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', moveDraw); canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', moveDraw); canvas.addEventListener('touchend', endDraw);
+        }
+
+        startBtn.addEventListener('click', fetchPrize);
+    </script>
+</body>
+</html>
