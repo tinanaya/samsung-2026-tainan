@@ -823,8 +823,17 @@
                     ];
                     // Weighted random for demo
                     const randomPrize = demoPrizes[Math.floor(Math.random() * demoPrizes.length)];
-                    // Generate fake serial for demo
-                    const fakeSerial = 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                    
+                    // --- [Fix] Generate 8-char uppercase serial for Demo Mode ---
+                    const generateDemoSerial = () => {
+                        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        let result = '';
+                        for (let i = 0; i < 8; i++) {
+                            result += chars.charAt(Math.floor(Math.random() * chars.length));
+                        }
+                        return result;
+                    };
+                    const fakeSerial = generateDemoSerial();
                     
                     handleSuccess({ status: 'success', prize: randomPrize, serial: fakeSerial });
                 }, 1500);
