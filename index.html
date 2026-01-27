@@ -217,10 +217,10 @@
                 <div class="prize-box">
                     <p class="text-yellow-400 font-bold mb-2 text-center border-b border-red-700 pb-1">🏆 刮刮樂獎項一覽</p>
                     <ul class="space-y-1 text-gray-200 pl-2">
-                        <li>🥇 <span class="text-white font-bold">金馬獎</span>：$1,000 購物金 💵 (10%)</li>
-                        <li>🥈 <span class="text-white font-bold">銀馬獎</span>：$500 購物金 💵 (40%)</li>
-                        <li>🥉 <span class="text-white font-bold">銅馬獎</span>：$100 購物金 💵 (30%)</li>
-                        <li class="flex items-start"><span class="mr-1">🎁</span><div><span class="text-white font-bold">參加獎</span>：<br><span class="text-[10px] text-gray-300 block mt-1">• 餐具組+矽膠摺疊碗 (10%)<br>• 旅行收納袋組 (10%)</span></div></li>
+                        <li>🥇 <span class="text-white font-bold">金馬獎</span>：$1,000 購物金 💵</li>
+                        <li>🥈 <span class="text-white font-bold">銀馬獎</span>：$500 購物金 💵</li>
+                        <li>🥉 <span class="text-white font-bold">銅馬獎</span>：$100 購物金 💵</li>
+                        <li class="flex items-start"><span class="mr-1">🎁</span><div><span class="text-white font-bold">參加獎</span>：<br><span class="text-[10px] text-gray-300 block mt-1">• 餐具組+矽膠摺疊碗<br>• 旅行收納袋組</span></div></li>
                     </ul>
                 </div>
                 <div class="mt-2"><p>🎁 <strong class="text-yellow-300">第二重：</strong> 購買指定機型，加碼再抽限量好禮!</p></div>
@@ -522,8 +522,7 @@
             localStorage.setItem(LS_KEY_PRIZE, data.prize);
             if(data.serial) { localStorage.setItem(LS_KEY_SERIAL, data.serial); serialDisplay.innerText = `核銷序號: ${data.serial}`; serialDisplay.classList.remove('hidden'); }
             prizeResult.innerText = data.prize; prizeResult.style.color = data.prize.includes("銘謝") || data.prize.includes("再接再厲") ? "#666" : "#b71c1c";
-            loading.style.display = 'none'; startOverlay.classList.add('hidden'); scratchArea.style.opacity = '1'; setupInteraction(); // Added setupInteraction back here for safety
-            initCanvas();
+            loading.style.display = 'none'; startOverlay.classList.add('hidden'); scratchArea.style.opacity = '1'; initCanvas();
         }
 
         async function fetchPrize() {
@@ -541,15 +540,6 @@
                 runLocalDraw();
             }
         }
-        
-        // Ensure setupInteraction is defined or integrated
-        function setupInteraction() {
-            // Re-bind events just in case, though initCanvas handles it.
-            // This function was referenced in catch block previously but initCanvas covers binding.
-            // Leaving it empty or just calling initCanvas logic if needed for external calls.
-            // Events are already bound in initCanvas which is called on load and handleSuccess.
-        }
-
         function resetUI() { loading.style.display = 'none'; startBtn.classList.remove('hidden'); }
         startBtn.addEventListener('click', fetchPrize);
     </script>
