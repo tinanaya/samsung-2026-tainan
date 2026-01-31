@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <!-- [NEW] Google Analytics 4 (GA4) -->
-    <!-- 請將 G-XXXXXXXXXX 替換為您的 GA4 評估 ID -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DFGJ2L8G83"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -357,6 +356,19 @@
 </head>
 <body class="pb-10 relative">
 
+    <!-- Define SVG Gradient for Gold -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                <stop offset="25%" style="stop-color:#FDB931;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#DAA520;stop-opacity:1" />
+                <stop offset="75%" style="stop-color:#B8860B;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+
     <!-- 背景圖層 -->
     
     <!-- 1. 中央金馬圖騰 (使用 mask-image 技術渲染的真實金馬剪影) -->
@@ -494,7 +506,7 @@
 
     </main>
 
-    <!-- Custom Modal (General) -->
+    <!-- Custom Modal -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="modal-title" class="text-lg font-bold text-yellow-400 mb-3">提示</h3>
@@ -509,7 +521,7 @@
     <!-- Winner Info Modal (For Big Prizes) -->
     <div id="winner-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="text-xl font-bold text-yellow-400 mb-2">🎉 恭喜中大獎！</h3>
+            <h3 class="text-xl font-bold text-yellow-400 mb-2">🎉 恭喜中獎！</h3>
             <p class="text-gray-300 text-xs mb-4">為了核銷此獎項，請填寫基本資料。</p>
             
             <form id="winner-form" class="space-y-3">
@@ -540,7 +552,7 @@
 
     <script>
         // CONFIG: 填入您部署好的 GAS Web App URL
-        const API_URL = "https://script.google.com/macros/s/AKfycbztniQphgKlT680wLqf4flRllzJh8gltoP3vzmkV7KccVAlCfxlcg_jGl35CWye5Uya2g/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbztniQphgKlT680wLqf4flRllzJh8gltoP3vzmkV7KccVAlCfxlcg_jGl35CWye5Uya2g/exec"; 
         // CONFIG: 填入您的 Google Sheet 編輯網址
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1BBIEFIL7lRx8NEqsd0M67hXEZJ4rqwcRY1UEfcjm8IU/edit?usp=sharing";
         
@@ -693,14 +705,21 @@
             if (currentMode === 'redeem') {
                 const prize = prizeResult.innerText;
                 
-                // [NEW LOGIC] Check for Big Prizes ($1000, $800, $500)
-                if (prize.includes('1,000') || prize.includes('500') || prize.includes('100')) {
+                // [UPDATED] Check for Prizes needing info (Money + Specific Gifts)
+                // Using simple includes checks for flexibility
+                if (prize.includes('1,000') || 
+                    prize.includes('800') || 
+                    prize.includes('500') || 
+                    prize.includes('100') || 
+                    prize.includes('餐具') || 
+                    prize.includes('旅行')) {
+                    
                     // Open Winner Info Modal
                     winnerNameInput.value = '';
                     winnerPhoneInput.value = '';
                     winnerModal.classList.add('active');
                 } else {
-                    // Standard Redeem for other prizes (Just confirm)
+                    // Standard Redeem for other prizes (if any exist)
                     showModal(
                         '工作人員確認', 
                         '確定要核銷此獎項嗎？\n核銷後系統將記錄，無法復原！', 
@@ -948,4 +967,3 @@
     </script>
 </body>
 </html>
-
