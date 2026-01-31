@@ -54,7 +54,6 @@
         .form-input { width: 100%; padding: 8px; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); border: 1px solid #FFD700; border-radius: 4px; color: white; font-size: 14px; }
         .form-input::placeholder { color: #aaa; }
         .form-label { display: block; text-align: left; color: #FFD700; font-size: 12px; margin-bottom: 4px; }
-        /* Style for Select Dropdown */
         select.form-input { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; }
         .history-item { border-bottom: 1px solid rgba(255,215,0,0.2); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
         .history-item:last-child { border-bottom: none; }
@@ -157,7 +156,6 @@
                     <label class="form-label">得獎者電話</label>
                     <input type="tel" id="winner-phone" class="form-input" placeholder="請輸入手機號碼" required>
                 </div>
-                <!-- [NEW] Device Selection -->
                 <div>
                     <label class="form-label">購買機型</label>
                     <select id="winner-device" class="form-input" required>
@@ -167,7 +165,6 @@
                         <option value="手錶">手錶</option>
                     </select>
                 </div>
-
                 <div class="flex space-x-3 justify-center mt-4">
                     <button type="button" id="winner-cancel" class="px-4 py-2 rounded bg-gray-700 text-gray-300 text-sm hover:bg-gray-600">取消</button>
                     <button type="submit" class="px-4 py-2 rounded bg-yellow-600 text-white text-sm font-bold hover:bg-yellow-500 border border-yellow-400">確認核銷</button>
@@ -180,9 +177,7 @@
     <div id="history-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 class="text-xl font-bold text-yellow-400 mb-4">📜 我的中獎紀錄</h3>
-            <div id="history-list" class="space-y-3 max-h-60 overflow-y-auto mb-4">
-                <!-- Content injected via JS -->
-            </div>
+            <div id="history-list" class="space-y-3 max-h-60 overflow-y-auto mb-4"></div>
             <button id="history-close-btn" class="w-full px-4 py-2 rounded bg-gray-700 text-white text-sm font-bold hover:bg-gray-600 border border-gray-500">關閉</button>
         </div>
     </div>
@@ -231,7 +226,7 @@
         const winnerForm = document.getElementById('winner-form');
         const winnerNameInput = document.getElementById('winner-name');
         const winnerPhoneInput = document.getElementById('winner-phone');
-        const winnerDeviceInput = document.getElementById('winner-device'); // New Input
+        const winnerDeviceInput = document.getElementById('winner-device');
         const winnerCancelBtn = document.getElementById('winner-cancel');
 
         const historyModal = document.getElementById('history-modal');
@@ -285,15 +280,12 @@
                 historyList.innerHTML = "<p class='text-gray-400'>尚無中獎紀錄</p>";
                 return;
             }
-            // Sort new to old
             [...currentHistory].reverse().forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'history-item bg-black bg-opacity-30 p-2 rounded';
-                
                 const statusHtml = item.redeemedTime 
                     ? `<span class="history-redeemed">✅ 已兌換</span>`
                     : `<button class="history-btn" onclick="loadFromHistory('${item.serial}')">載入兌換</button>`;
-
                 div.innerHTML = `
                     <div class="history-info">
                         <div class="text-white font-bold">${item.prize}</div>
@@ -314,8 +306,6 @@
             if(isRevealed) document.getElementById('claim-section').scrollIntoView({behavior:'smooth'});
         };
 
-        // --- Main Logic ---
-
         adminLink.addEventListener('click', (e) => { e.preventDefault(); window.open(GOOGLE_SHEET_URL, '_blank'); });
 
         function showModal(title, message, isConfirmType = true, onConfirm = null) {
@@ -333,8 +323,7 @@
             e.preventDefault(); 
             const name = winnerNameInput.value.trim(); 
             const phone = winnerPhoneInput.value.trim();
-            const device = winnerDeviceInput.value; // Get device value
-            
+            const device = winnerDeviceInput.value; 
             if(name && phone && device) { 
                 winnerModal.classList.remove('active'); 
                 proceedRedeem(name, phone, device); 
@@ -343,13 +332,11 @@
 
         function checkHistory() {
             const currentItem = currentHistory.find(i => i.serial === activeSerial);
-
             if (currentItem) {
                 prizeResult.innerText = currentItem.prize;
                 prizeResult.style.color = currentItem.prize.includes("銘謝") ? "#666" : "#b71c1c";
                 serialDisplay.innerText = `核銷序號: ${currentItem.serial}`;
                 serialDisplay.classList.remove('hidden');
-
                 startOverlay.classList.add('hidden');
                 scratchArea.style.opacity = '1';
                 isRevealed = true; 
@@ -361,7 +348,7 @@
                 } else {
                     redeemBtn.classList.remove('hidden');
                     resetGameBtn.classList.remove('hidden');
-                    resetGameBtn.innerText = "開始新遊戲 (保留紀錄)";
+                    resetGameBtn.innerText = "重置遊戲 (保留紀錄)";
                     redeemDetails.classList.add('hidden');
                     statusText.classList.remove('hidden');
                     congratsText.innerText = "恭喜獲得！";
@@ -380,7 +367,6 @@
         
         redeemBtn.addEventListener('click', () => {
             const prize = prizeResult.innerText;
-            // Check for Prizes needing info
             if (prize.includes('1,000') || prize.includes('500') || prize.includes('100') || prize.includes('餐具') || prize.includes('旅行')) {
                 winnerNameInput.value = ''; winnerPhoneInput.value = ''; winnerDeviceInput.value = '';
                 winnerModal.classList.add('active');
@@ -390,56 +376,46 @@
         });
 
         resetGameBtn.addEventListener('click', () => {
-            activeSerial = null;
-            saveHistory();
-            location.reload(); 
+            showModal('重置確認', '確定要重置並讓下一位客人使用嗎？', true, () => {
+                activeSerial = null; // Just clear active state
+                saveHistory(); // Save the fact that no game is active
+                location.reload(); 
+            });
         });
 
-        // [Updated] proceedRedeem now accepts device type
         async function proceedRedeem(name = '', phone = '', device = '') {
             const prizeName = prizeResult.innerText;
             const serial = localStorage.getItem(LS_KEY_SERIAL) || ''; 
-            
-            redeemBtn.classList.add('hidden'); 
-            resetGameBtn.classList.add('hidden');
-            redeemLoading.style.display = 'block'; 
-
+            redeemBtn.classList.add('hidden'); resetGameBtn.classList.add('hidden'); redeemLoading.style.display = 'block'; 
             if (API_URL.includes("YOUR_GAS_WEB_APP_URL_HERE")) {
                 setTimeout(() => { completeRedemption(new Date().toLocaleString('zh-TW', { hour12: false })); }, 1000); return;
             }
-
             try {
                 const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: 'redeem', 
-                        prize: prizeName, 
-                        serial: serial,
-                        name: name,
-                        phone: phone,
-                        device: device // Send Device Info
-                    }),
-                    redirect: "follow", 
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    method: 'POST', body: JSON.stringify({ action: 'redeem', prize: prizeName, serial: serial, name: name, phone: phone, device: device }), 
+                    redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" },
                 });
-                
                 const data = await response.json();
-                
-                if(data.status === 'success') {
-                    completeRedemption(data.time);
-                    if(typeof gtag !== 'undefined') {
-                        gtag('event', 'redemption_success', { 'prize': prizeName, 'device': device });
-                    }
-                } else {
-                    showModal('核銷失敗', `錯誤：${data.message}\n是否強制標記為已核銷？`, true, () => { completeRedemption("Offline Force"); });
-                    redeemBtn.classList.remove('hidden'); resetGameBtn.classList.remove('hidden'); redeemLoading.style.display = 'none';
-                }
+                if(data.status === 'success') { completeRedemption(data.time); if(typeof gtag !== 'undefined') { gtag('event', 'redemption_success', { 'prize': prizeName, 'device': device }); } } 
+                else { showModal('核銷失敗', `錯誤：${data.message}`, true, () => { completeRedemption("Offline Force"); }); redeemBtn.classList.remove('hidden'); resetGameBtn.classList.remove('hidden'); redeemLoading.style.display = 'none'; }
             } catch (e) {
                 console.error(e);
-                showModal('連線錯誤', '無法連接伺服器，改為離線核銷？', true, () => { completeRedemption("Offline"); });
-                redeemBtn.classList.remove('hidden'); resetGameBtn.classList.remove('hidden'); redeemLoading.style.display = 'none';
+                // Fallback to offline draw logic (simulate success)
+                runLocalDrawFallback(name, phone, device);
             }
         }
+
+        // New Fallback Function for Offline Redemption
+        function runLocalDrawFallback(name, phone, device) {
+             console.log("Offline Redeem Triggered:", {name, phone, device});
+             // Simulate network delay then success
+             setTimeout(() => {
+                 completeRedemption(new Date().toLocaleString('zh-TW', { hour12: false }) + " (離線)");
+             }, 1000);
+        }
+
+        // Renamed function to avoid conflict/confusion if needed, 
+        // essentially just a helper to call completeRedemption in offline scenario.
 
         function completeRedemption(timeStr) {
             const itemIndex = currentHistory.findIndex(i => i.serial === activeSerial);
@@ -451,39 +427,20 @@
         }
 
         function switchToResetState(timeStr) {
-            redeemLoading.style.display = 'none';
-            redeemBtn.classList.add('hidden');
-            resetGameBtn.classList.remove('hidden');
-            resetGameBtn.innerText = "開始新遊戲 (保留紀錄)";
-            resetGameBtn.classList.remove('btn-gold', 'text-red-900');
-            resetGameBtn.classList.add('btn-reset', 'text-white');
-
-            statusText.classList.add('hidden');
-            congratsText.innerText = "兌換完成";
-            congratsText.classList.remove('animate-bounce');
-            congratsText.style.color = '#4ade80';
-            
-            redeemDetails.classList.remove('hidden');
-            redeemTime.innerText = `核銷時間: ${timeStr}`;
-            canvas.style.pointerEvents = 'none';
+            redeemLoading.style.display = 'none'; redeemBtn.classList.add('hidden'); 
+            resetGameBtn.classList.remove('hidden'); resetGameBtn.innerText = "開始新遊戲 (保留紀錄)";
+            resetGameBtn.classList.remove('btn-gold', 'text-red-900'); resetGameBtn.classList.add('btn-reset', 'text-white');
+            statusText.classList.add('hidden'); congratsText.innerText = "兌換完成"; congratsText.classList.remove('animate-bounce'); congratsText.style.color = '#4ade80';
+            redeemDetails.classList.remove('hidden'); redeemTime.innerText = `核銷時間: ${timeStr}`; canvas.style.pointerEvents = 'none';
         }
 
         function initCanvas() {
-            const width = document.getElementById('scratch-area').offsetWidth;
-            const height = document.getElementById('scratch-area').offsetHeight;
-            canvas.width = width; canvas.height = height;
-            if(fxCanvas) { fxCanvas.width = width; fxCanvas.height = height; }
-
+            const width = document.getElementById('scratch-area').offsetWidth; const height = document.getElementById('scratch-area').offsetHeight;
+            canvas.width = width; canvas.height = height; if(fxCanvas) { fxCanvas.width = width; fxCanvas.height = height; }
             const getPos = (e) => { const rect = canvas.getBoundingClientRect(); return { x: (e.clientX || e.touches[0].clientX) - rect.left, y: (e.clientY || e.touches[0].clientY) - rect.top }; };
             const startDraw = (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); };
-            const moveDraw = (e) => {
-                if (!isDrawing || isRevealed) return; e.preventDefault();
-                ctx.lineTo(getPos(e).x, getPos(e).y); ctx.stroke(); 
-                for(let i=0; i<3; i++) particles.push(new Particle(getPos(e).x, getPos(e).y));
-                checkScratchPercent();
-            };
+            const moveDraw = (e) => { if (!isDrawing || isRevealed) return; e.preventDefault(); ctx.lineTo(getPos(e).x, getPos(e).y); ctx.stroke(); for(let i=0; i<3; i++) particles.push(new Particle(getPos(e).x, getPos(e).y)); checkScratchPercent(); };
             const endDraw = () => { isDrawing = false; };
-            
             if (!isRevealed) {
                 ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#C0C0C0'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#a0a0a0'; ctx.font = 'bold 24px Arial'; ctx.textAlign = "center"; ctx.textBaseline = "middle";
@@ -513,7 +470,9 @@
         }
 
         function handleSuccess(data) {
-            localStorage.setItem(LS_KEY_PRIZE, data.prize);
+            const newItem = { serial: data.serial, prize: data.prize, winTime: new Date().toLocaleString('zh-TW', { hour12: false }), redeemedTime: null };
+            currentHistory.push(newItem); activeSerial = data.serial; saveHistory();
+
             if(data.serial) { localStorage.setItem(LS_KEY_SERIAL, data.serial); serialDisplay.innerText = `核銷序號: ${data.serial}`; serialDisplay.classList.remove('hidden'); }
             prizeResult.innerText = data.prize; prizeResult.style.color = data.prize.includes("銘謝") ? "#666" : "#b71c1c";
             loading.style.display = 'none'; startOverlay.classList.add('hidden'); scratchArea.style.opacity = '1'; initCanvas();
@@ -522,6 +481,7 @@
         async function fetchPrize() {
             if (activeSerial) { checkHistory(); return; } 
             startBtn.classList.add('hidden'); loading.style.display = 'block';
+
             if (API_URL.includes("YOUR_GAS_WEB_APP_URL_HERE")) {
                 setTimeout(() => {
                     const demoPrizes = [ "🥇 金馬獎：$1,000 購物金 💵", "🎁 參加獎：旅行收納袋組" ];
@@ -535,7 +495,25 @@
                 const data = await response.json();
                 if (data.status === 'success') handleSuccess(data); else { showModal('錯誤', '發生錯誤: ' + data.message, false); resetUI(); }
             } catch (error) {
-                console.error(error); prizeResult.innerText = "網路異常\n請洽工作人員"; loading.style.display = 'none'; startOverlay.classList.add('hidden'); scratchArea.style.opacity = '1';
+                console.error("API Error, switching to offline mode:", error);
+                
+                // Fallback Logic for Draw
+                setTimeout(() => {
+                    // Probabilities based on v21
+                    const rand = Math.random() * 100;
+                    let prizeName = "";
+                    if (rand < 1) prizeName = "🥇 金馬獎：$1,000 購物金 💵";
+                    else if (rand < 10) prizeName = "🥈 銀馬獎：$500 購物金 💵";
+                    else if (rand < 20) prizeName = "🥉 銅馬獎：$100 購物金 💵";
+                    else if (rand < 55) prizeName = "🎁 參加獎：餐具組+矽膠摺疊碗";
+                    else prizeName = "🎁 參加獎：旅行收納袋組";
+
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
+                    let fakeSerial = ''; 
+                    for(let i=0; i<8; i++) fakeSerial += chars.charAt(Math.floor(Math.random() * chars.length));
+                    
+                    handleSuccess({ status: 'success', prize: prizeName, serial: fakeSerial + "(離線)" });
+                }, 1500);
             }
         }
         function resetUI() { loading.style.display = 'none'; startBtn.classList.remove('hidden'); }
