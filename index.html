@@ -580,6 +580,7 @@
                         <option value="手機">手機</option>
                         <option value="平板">平板</option>
                         <option value="手錶">手錶</option>
+                        <option value="其他">其他</option>
                     </select>
                 </div>
 
@@ -754,15 +755,25 @@
             if(isConfirmType) { modalCancelBtn.style.display = 'block'; modalConfirmBtn.innerText = "確認"; modalConfirmBtn.classList.remove('w-full'); } else { modalCancelBtn.style.display = 'none'; modalConfirmBtn.innerText = "關閉"; modalConfirmBtn.classList.add('w-full'); }
             modal.classList.add('active');
         }
-        function hideModal() { modal.classList.remove('active'); modalCallback = null; }
-        modalCancelBtn.addEventListener('click', hideModal);
-        modalConfirmBtn.addEventListener('click', () => { if (modalCallback) modalCallback(); hideModal(); });
+        function hideModal() {
+            modal.classList.remove('active');
+            modalCallback = null;
+        }
 
-        winnerCancelBtn.addEventListener('click', () => { winnerModal.classList.remove('active'); });
-        
+        modalCancelBtn.addEventListener('click', hideModal);
+        modalConfirmBtn.addEventListener('click', () => {
+            if (modalCallback) modalCallback();
+            hideModal();
+        });
+
+        // --- Winner Modal Logic ---
+        winnerCancelBtn.addEventListener('click', () => {
+            winnerModal.classList.remove('active');
+        });
+
         winnerForm.addEventListener('submit', (e) => {
-            e.preventDefault(); 
-            const name = winnerNameInput.value.trim(); 
+            e.preventDefault();
+            const name = winnerNameInput.value.trim();
             const phone = winnerPhoneInput.value.trim();
             const device = winnerDeviceInput.value; // Get device value
             
@@ -772,6 +783,7 @@
             }
         });
 
+        // --- Check History ---
         function checkHistory() {
             const currentItem = currentHistory.find(i => i.serial === activeSerial);
 
@@ -813,6 +825,7 @@
             }
         }
         
+        // --- Action Button Logic (Redeem -> Reset) ---
         redeemBtn.addEventListener('click', () => {
             const prize = prizeResult.innerText;
             
@@ -902,7 +915,7 @@
                     showModal('核銷失敗', `伺服器回應錯誤：${data.message}\n是否強制標記為已核銷？`, true, () => {
                         completeRedemption("Offline Force");
                     });
-                    // Restore buttons
+                    // Restore buttons on fail/cancel logic if handled
                     redeemBtn.classList.remove('hidden');
                     resetGameBtn.classList.remove('hidden');
                     redeemLoading.style.display = 'none';
@@ -1026,12 +1039,16 @@
 
         function handleSuccess(data) {
             localStorage.setItem(LS_KEY_PRIZE, data.prize);
+            // [New] Save serial to localStorage
             if(data.serial) {
                 localStorage.setItem(LS_KEY_SERIAL, data.serial);
+                // Update UI immediately
                 serialDisplay.innerText = `核銷序號: ${data.serial}`;
                 serialDisplay.classList.remove('hidden');
             }
+
             prizeResult.innerText = data.prize;
+            // Red text for prize, gray for consolation
             prizeResult.style.color = data.prize.includes("銘謝") ? "#666" : "#b71c1c";
             loading.style.display = 'none';
             startOverlay.classList.add('hidden');
@@ -1049,6 +1066,7 @@
             activeSerial = data.serial;
             saveHistory();
 
+            // Re-init canvas
             initCanvas();
         }
 
