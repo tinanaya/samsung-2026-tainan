@@ -17,48 +17,376 @@
 
       gtag('config', 'G-DFGJ2L8G83');
     </script>
+    <!-- [End] Google Analytics -->
 
     <style>
-        /* [保留 CSS 不變] */
-        :root { --cny-red-deep: #4A0404; --cny-red-main: #8B0000; --cny-gold: #FFD700; --cny-gold-dim: #C5A059; }
-        body { background-color: var(--cny-red-deep); color: white; font-family: 'Noto Sans TC', sans-serif; overflow-x: hidden; min-height: 100vh; background-image: radial-gradient(circle at 50% 40%, #B22222 0%, #4A0404 90%); background-size: 100% 100%; }
-        .horse-mask-container { position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 80vw; max-width: 500px; aspect-ratio: 1/1; z-index: 0; pointer-events: none; opacity: 0.6; -webkit-mask-image: url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/horse.svg'); mask-image: url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/horse.svg'); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%); filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5)); }
-        .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(transparent 50%, rgba(30, 0, 0, 0.9) 100%); z-index: 0; pointer-events: none; }
-        .festive-decoration { position: fixed; top: 15px; left: 15px; z-index: 50; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
-        .couplet-container { width: 50px; height: 50px; position: relative; margin-bottom: -5px; z-index: 2; }
-        .couplet-diamond { width: 100%; height: 100%; background: linear-gradient(135deg, #d32f2f, #b71c1c); border: 2px solid #FFD700; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 5px rgba(0,0,0,0.3); }
-        .couplet-char { transform: rotate(-45deg); font-family: 'Ma Shan Zheng', serif; font-size: 32px; color: #FFD700; text-shadow: 0 1px 2px rgba(0,0,0,0.5); margin-top: -3px; }
-        .firecrackers { display: flex; flex-direction: column; align-items: center; animation: sway 3s infinite ease-in-out alternate; transform-origin: top center; z-index: 1; }
-        .firecrackers .string { width: 2px; height: 10px; background-color: #FFD700; }
-        .cracker { width: 12px; height: 20px; background: linear-gradient(to right, #ef5350, #c62828, #ef5350); margin-top: -4px; border-radius: 2px; border-top: 1px solid #FFD700; border-bottom: 1px solid #FFD700; }
-        .cracker:nth-child(2n) { transform: rotate(15deg) translateX(4px); } .cracker:nth-child(2n+1) { transform: rotate(-15deg) translateX(-4px); }
-        .tassel { width: 4px; height: 20px; background: #FFD700; margin-top: -2px; border-radius: 0 0 2px 2px; }
-        @keyframes sway { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
-        .scratch-container { position: relative; width: 300px; height: 150px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.3); border: 4px solid var(--cny-gold); background-color: #fff; }
-        .prize-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #fff 0%, #fff8e1 100%); color: #b71c1c; font-size: 1.25rem; font-weight: bold; text-align: center; padding: 10px; z-index: 1; line-height: 1.3; }
-        canvas { position: absolute; top: 0; left: 0; cursor: grab; }
-        .btn-gold { background: linear-gradient(to bottom, #FFD700, #FFA500); color: #8B0000; font-weight: bold; box-shadow: 0 4px 0 #b8860b, 0 5px 10px rgba(0,0,0,0.3); transition: all 0.1s ease; border: 1px solid #FFF; text-shadow: 0 1px 0 rgba(255,255,255,0.4); }
-        .btn-gold:active { transform: translateY(4px); box-shadow: 0 0 0 #b8860b, 0 2px 5px rgba(0,0,0,0.3); }
-        .btn-reset { background: linear-gradient(45deg, #424242, #212121) !important; color: white !important; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s ease; border-color: #9e9e9e !important; }
-        .loader { border: 4px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top: 4px solid var(--cny-gold); width: 30px; height: 30px; animation: spin 1s linear infinite; display: none; margin: 10px auto; }
+        /* Lunar New Year Red & Gold Palette */
+        :root {
+            --cny-red-deep: #4A0404; --cny-red-main: #8B0000; --cny-gold: #FFD700; --cny-gold-dim: #C5A059;
+        }
+
+        body {
+            background-color: var(--cny-red-deep);
+            color: white;
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 40%, #B22222 0%, #4A0404 90%);
+            background-size: 100% 100%;
+        }
+
+        /* --- Realistic Golden Horse using Masking (Center) --- */
+        .horse-mask-container {
+            position: fixed;
+            top: 55%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            max-width: 500px;
+            aspect-ratio: 1/1; 
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6; 
+            
+            -webkit-mask-image: url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/horse.svg');
+            mask-image: url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/horse.svg');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+        }
+
+        /* 暗角效果 */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(transparent 50%, rgba(30, 0, 0, 0.9) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- 左上角春聯加鞭炮裝飾 --- */
+        .festive-decoration {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 50; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        /* 斗方春聯 */
+        .couplet-container {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            margin-bottom: -5px; 
+            z-index: 2;
+        }
+
+        .couplet-diamond {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            border: 2px solid #FFD700;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        /* Calligraphy Font Style */
+        .couplet-char {
+            transform: rotate(-45deg);
+            font-family: 'Ma Shan Zheng', serif;
+            font-size: 32px;
+            color: #FFD700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            margin-top: -3px; 
+        }
+
+        /* 鞭炮串 */
+        .firecrackers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: sway 3s infinite ease-in-out alternate;
+            transform-origin: top center;
+            z-index: 1;
+        }
+
+        .firecrackers .string {
+            width: 2px;
+            height: 10px;
+            background-color: #FFD700;
+        }
+
+        .cracker {
+            width: 12px;
+            height: 20px;
+            background: linear-gradient(to right, #ef5350, #c62828, #ef5350);
+            margin-top: -4px; 
+            border-radius: 2px;
+            position: relative;
+            border-top: 1px solid #FFD700;
+            border-bottom: 1px solid #FFD700;
+        }
+        
+        .cracker:nth-child(2n) { transform: rotate(15deg) translateX(4px); }
+        .cracker:nth-child(2n+1) { transform: rotate(-15deg) translateX(-4px); }
+        
+        .tassel {
+            width: 4px;
+            height: 20px;
+            background: #FFD700;
+            margin-top: -2px;
+            border-radius: 0 0 2px 2px;
+        }
+
+        @keyframes sway {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        /* Scratch Card Container */
+        .scratch-container {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.3);
+            border: 4px solid var(--cny-gold);
+            background-color: #fff;
+        }
+
+        .prize-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #fff 0%, #fff8e1 100%);
+            color: #b71c1c;    
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            z-index: 1;
+            line-height: 1.3;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: grab;
+        }
+        
+        #scratch-canvas {
+            z-index: 2;
+        }
+
+        /* FX Canvas for Gold Dust */
+        #fx-canvas {
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Galaxy AI Star Icon */
+        .ai-star {
+            color: var(--cny-gold);
+            animation: pulse 2s infinite;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .btn-gold {
+            background: linear-gradient(to bottom, #FFD700, #FFA500);
+            color: #8B0000;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #b8860b, 0 5px 10px rgba(0,0,0,0.3);
+            transition: all 0.1s ease;
+            border: 1px solid #FFF;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .btn-gold:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #b8860b, 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        /* Red Button for Reset */
+        .btn-reset {
+            background: linear-gradient(45deg, #424242, #212121) !important;
+            color: white !important;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            border-color: #9e9e9e !important;
+        }
+
+        /* Loader */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--cny-gold);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 10px auto;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: #4a0404; border: 2px solid var(--cny-gold); border-radius: 12px; padding: 20px; width: 90%; max-width: 320px; text-align: center; box-shadow: 0 0 30px rgba(255, 215, 0, 0.15); transform: scale(0.9); transition: transform 0.3s ease; max-height: 80vh; overflow-y: auto;}
-        .modal-overlay.active .modal-content { transform: scale(1); }
-        .prize-box { background-color: rgba(100, 0, 0, 0.6); border: 1px solid rgba(255, 215, 0, 0.4); border-radius: 8px; padding: 12px; margin: 12px 0; box-shadow: inset 0 0 15px rgba(0,0,0,0.4); }
-        .admin-link, .history-link { color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; text-decoration: none; transition: color 0.3s; cursor: pointer; border-bottom: 1px dashed rgba(255,255,255,0.3); }
-        .admin-link:hover, .history-link:hover { color: #FFD700; border-bottom: 1px solid #FFD700; }
-        .footer-links { display: flex; gap: 15px; justify-content: center; margin-top: 10px; }
-        .form-input { width: 100%; padding: 8px; margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.3); border: 1px solid #FFD700; border-radius: 4px; color: white; font-size: 14px; }
-        .form-input::placeholder { color: #aaa; }
-        .form-label { display: block; text-align: left; color: #FFD700; font-size: 12px; margin-bottom: 4px; }
-        select.form-input { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 20px; }
-        .history-item { border-bottom: 1px solid rgba(255,215,0,0.2); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-        .history-item:last-child { border-bottom: none; }
-        .history-info { text-align: left; font-size: 0.9rem; }
-        .history-btn { font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: #FFD700; color: #8B0000; font-weight: bold; }
-        .history-redeemed { color: #4ade80; font-size: 0.8rem; }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: #4a0404; /* Dark red background for modal */
+            border: 2px solid var(--cny-gold);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* Prize Box Styling */
+        .prize-box {
+            background-color: rgba(100, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
+        }
+        
+        /* Admin Link Style */
+        .admin-link, .history-link {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+        }
+        .admin-link:hover, .history-link:hover {
+            color: #FFD700;
+            border-bottom: 1px solid #FFD700;
+        }
+        .footer-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        /* Form Styles for Winner Info */
+        .form-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid #FFD700;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+        .form-input::placeholder {
+            color: #aaa;
+        }
+        .form-label {
+            display: block;
+            text-align: left;
+            color: #FFD700;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        /* Style for Select Dropdown */
+        select.form-input {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+        }
+
+        /* History List Styles */
+        .history-item {
+            border-bottom: 1px solid rgba(255,215,0,0.2);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-info {
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .history-btn {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #D32F2F; /* Red button for redeem */
+            color: white;
+            font-weight: bold;
+            border: 1px solid #FFD700;
+        }
+        .history-btn:hover {
+            background-color: #b71c1c;
+        }
+        .history-redeemed {
+            color: #4ade80;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body class="pb-10 relative">
@@ -129,7 +457,7 @@
         </div>
     </main>
 
-    <!-- Custom Modal -->
+    <!-- Custom Modal (General) -->
     <div id="custom-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="modal-title" class="text-lg font-bold text-yellow-400 mb-3">提示</h3>
@@ -147,9 +475,24 @@
             <h3 class="text-xl font-bold text-yellow-400 mb-2">🎉 恭喜中獎！</h3>
             <p class="text-gray-300 text-xs mb-4">為了核銷此獎項，請填寫基本資料。</p>
             <form id="winner-form" class="space-y-3">
-                <div><label class="form-label">得獎者姓名</label><input type="text" id="winner-name" class="form-input" placeholder="請輸入姓名" required></div>
-                <div><label class="form-label">得獎者電話</label><input type="tel" id="winner-phone" class="form-input" placeholder="請輸入手機號碼" required></div>
-                <div><label class="form-label">購買機型</label><select id="winner-device" class="form-input" required><option value="" disabled selected>請選擇...</option><option value="手機">手機</option><option value="平板">平板</option><option value="手錶">手錶</option><option value="其他">其他</option></select></div>
+                <div>
+                    <label class="form-label">得獎者姓名</label>
+                    <input type="text" id="winner-name" class="form-input" placeholder="請輸入姓名" required>
+                </div>
+                <div>
+                    <label class="form-label">得獎者電話</label>
+                    <input type="tel" id="winner-phone" class="form-input" placeholder="請輸入手機號碼" required>
+                </div>
+                <div>
+                    <label class="form-label">購買機型</label>
+                    <select id="winner-device" class="form-input" required>
+                        <option value="" disabled selected>請選擇...</option>
+                        <option value="手機">手機</option>
+                        <option value="平板">平板</option>
+                        <option value="手錶">手錶</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
                 <div class="flex space-x-3 justify-center mt-4">
                     <button type="button" id="winner-cancel" class="px-4 py-2 rounded bg-gray-700 text-gray-300 text-sm hover:bg-gray-600">取消</button>
                     <button type="submit" class="px-4 py-2 rounded bg-yellow-600 text-white text-sm font-bold hover:bg-yellow-500 border border-yellow-400">確認核銷</button>
@@ -161,7 +504,7 @@
     <!-- History Modal -->
     <div id="history-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="text-xl font-bold text-yellow-400 mb-4">📜 全域中獎名單 (庫存後台)</h3>
+            <h3 class="text-xl font-bold text-yellow-400 mb-4">📜 中獎紀錄 (雲端)</h3>
             <div id="history-list" class="space-y-3 max-h-60 overflow-y-auto mb-4"></div>
             <button id="history-close-btn" class="w-full px-4 py-2 rounded bg-gray-700 text-white text-sm font-bold hover:bg-gray-600 border border-gray-500">關閉</button>
         </div>
@@ -222,7 +565,16 @@
 
         let isDrawing = false; let isRevealed = false; let particles = []; let modalCallback = null; 
         
-        const LS_KEY_PRIZE = 'samsung_2026_prize'; const LS_KEY_REDEEMED = 'samsung_2026_redeemed_at'; const LS_KEY_SERIAL = 'samsung_2026_serial';
+        // Redemption Context to handle flow
+        let redemptionContext = {
+            serial: null,
+            prize: null,
+            source: 'main' // 'main' or 'history'
+        };
+
+        const LS_KEY_PRIZE = 'samsung_2026_prize'; 
+        const LS_KEY_REDEEMED = 'samsung_2026_redeemed_at'; 
+        const LS_KEY_SERIAL = 'samsung_2026_serial';
         
         window.addEventListener('load', () => { initCanvas(); checkHistory(); });
         adminLink.addEventListener('click', (e) => { e.preventDefault(); window.open(GOOGLE_SHEET_URL, '_blank'); });
@@ -238,63 +590,49 @@
 
         winnerCancelBtn.addEventListener('click', () => { winnerModal.classList.remove('active'); });
         winnerForm.addEventListener('submit', (e) => {
-            e.preventDefault(); const name = winnerNameInput.value.trim(); const phone = winnerPhoneInput.value.trim(); const device = winnerDeviceInput.value;
-            if(name && phone && device) { winnerModal.classList.remove('active'); proceedRedeem(name, phone, device); }
+            e.preventDefault(); 
+            const name = winnerNameInput.value.trim(); 
+            const phone = winnerPhoneInput.value.trim();
+            const device = winnerDeviceInput.value;
+            if(name && phone && device) { 
+                winnerModal.classList.remove('active'); 
+                executeRedemption(name, phone, device); 
+            }
         });
 
-        function checkHistory() {
-            const savedPrize = localStorage.getItem(LS_KEY_PRIZE); const redeemedAt = localStorage.getItem(LS_KEY_REDEEMED); const savedSerial = localStorage.getItem(LS_KEY_SERIAL);
-            if (savedPrize) {
-                prizeResult.innerText = savedPrize; prizeResult.style.color = savedPrize.includes("銘謝") ? "#666" : "#b71c1c";
-                startOverlay.classList.add('hidden'); scratchArea.style.opacity = '1'; ctx.clearRect(0, 0, canvas.width, canvas.height); claimSection.classList.remove('hidden');
-                if(savedSerial) { serialDisplay.innerText = `核銷序號: ${savedSerial}`; serialDisplay.classList.remove('hidden'); }
-                if (redeemedAt) { switchToResetState(redeemedAt); } else { confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 }, colors: ['#FFD700', '#D32F2F', '#FFFFFF'] }); }
-            }
-        }
-        
-        redeemBtn.addEventListener('click', () => {
-            const prize = prizeResult.innerText;
-            if (prize.includes('1,000') || prize.includes('500') || prize.includes('100') || prize.includes('餐具') || prize.includes('旅行')) {
-                winnerNameInput.value = ''; winnerPhoneInput.value = ''; winnerDeviceInput.value = ''; winnerModal.classList.add('active');
+        // --- Core Redemption Flow Controller ---
+        function triggerRedeemFlow(serial, prize, source) {
+            redemptionContext = { serial, prize, source };
+            
+            // Logic for checking prize type
+            if (prize.includes('1,000') || 
+                prize.includes('500') || 
+                prize.includes('100') || 
+                prize.includes('餐具') || 
+                prize.includes('旅行')) {
+                
+                // Needs Info
+                winnerNameInput.value = ''; 
+                winnerPhoneInput.value = ''; 
+                winnerDeviceInput.value = '';
+                winnerModal.classList.add('active');
             } else {
-                showModal('工作人員確認', '確定要核銷此獎項嗎？\n核銷後系統將記錄，無法復原！', true, () => { proceedRedeem(); });
-            }
-        });
-
-        resetGameBtn.addEventListener('click', () => {
-            showModal('重置確認', '確定要重置並讓下一位客人使用嗎？', true, () => {
-                localStorage.removeItem(LS_KEY_PRIZE); localStorage.removeItem(LS_KEY_REDEEMED); localStorage.removeItem(LS_KEY_SERIAL); location.reload();
-            });
-        });
-
-        async function proceedRedeem(name = '', phone = '', device = '') {
-            const prizeName = prizeResult.innerText; const serial = localStorage.getItem(LS_KEY_SERIAL) || ''; 
-            redeemBtn.classList.add('hidden'); resetGameBtn.classList.add('hidden'); redeemLoading.style.display = 'block'; 
-            if (API_URL.includes("YOUR_GAS_WEB_APP_URL_HERE")) {
-                setTimeout(() => { completeRedemption(new Date().toLocaleString('zh-TW', { hour12: false })); }, 1000); return;
-            }
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST', body: JSON.stringify({ action: 'redeem', prize: prizeName, serial: serial, name: name, phone: phone, device: device }), 
-                    redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" },
-                });
-                const data = await response.json();
-                if(data.status === 'success') { completeRedemption(data.time); if(typeof gtag !== 'undefined') { gtag('event', 'redemption_success', { 'prize': prizeName, 'device': device }); } } 
-                else { showModal('核銷失敗', `錯誤：${data.message}`, true, () => { completeRedemption("Offline Force"); }); redeemBtn.classList.remove('hidden'); resetGameBtn.classList.remove('hidden'); redeemLoading.style.display = 'none'; }
-            } catch (e) {
-                console.error(e); showModal('連線錯誤', '無法連接伺服器，改為離線核銷？', true, () => { completeRedemption("Offline"); }); redeemBtn.classList.remove('hidden'); resetGameBtn.classList.remove('hidden'); redeemLoading.style.display = 'none';
+                // Simple Confirm
+                showModal(
+                    '工作人員確認', 
+                    '確定要核銷此獎項嗎？\n核銷後系統將記錄，無法復原！', 
+                    true, 
+                    () => { executeRedemption(); }
+                );
             }
         }
 
-        function completeRedemption(timeStr) { localStorage.setItem(LS_KEY_REDEEMED, timeStr); switchToResetState(timeStr); }
-        function switchToResetState(timeStr) {
-            redeemLoading.style.display = 'none'; redeemBtn.classList.add('hidden'); resetGameBtn.classList.remove('hidden');
-            resetGameBtn.innerText = "開始新遊戲"; resetGameBtn.classList.remove('btn-gold', 'text-red-900'); resetGameBtn.classList.add('btn-reset', 'text-white'); resetGameBtn.dataset.mode = 'reset';
-            statusText.classList.add('hidden'); congratsText.innerText = "兌換完成"; congratsText.classList.remove('animate-bounce'); congratsText.style.color = '#4ade80';
-            redeemDetails.classList.remove('hidden'); redeemTime.innerText = `核銷時間: ${timeStr}`; canvas.style.pointerEvents = 'none';
-        }
+        // --- History Modal Functions ---
+        // Global function called by history buttons
+        window.handleHistoryRedeem = function(serial, prize) {
+            triggerRedeemFlow(serial, prize, 'history');
+        };
 
-        // --- FETCH GLOBAL HISTORY (New) ---
         historyLink.addEventListener('click', async (e) => {
             e.preventDefault();
             historyList.innerHTML = '<p class="text-center text-yellow-300">載入雲端資料中...</p>';
@@ -327,8 +665,8 @@
                 // Show masked winner info if available
                 const winnerInfo = item.winner ? `<div class="text-xs text-blue-300 mt-1">👤 ${item.winner}</div>` : '';
                 const statusHtml = item.redeemed 
-                    ? `<div class="text-right"><span class="history-redeemed">✅ 已兌換</span><div class="text-[10px] text-gray-500">${item.redeemedTime.split(' ')[0]}</div></div>`
-                    : `<span class="text-yellow-500 text-xs">⚠️ 未兌換</span>`;
+                    ? `<div class="text-right"><span class="history-redeemed">✅ 已兌換</span><div class="text-[10px] text-gray-500">${item.redeemedTime ? item.redeemedTime.split(' ')[0] : ''}</div></div>`
+                    : `<button class="history-btn bg-red-600 hover:bg-red-500 text-white" onclick="handleHistoryRedeem('${item.serial}', '${item.prize}')">立即核銷</button>`;
 
                 div.innerHTML = `
                     <div class="history-info w-2/3">
@@ -336,10 +674,88 @@
                         <div class="text-xs text-gray-400 font-mono">SN: ${item.serial}</div>
                         ${winnerInfo}
                     </div>
-                    <div class="w-1/3 flex justify-end items-center">${statusHtml}</div>
+                    <div class="w-1/3 flex justify-end items-center pl-2">${statusHtml}</div>
                 `;
                 historyList.appendChild(div);
             });
+        }
+
+        // --- Main UI Logic ---
+        function checkHistory() {
+            const savedPrize = localStorage.getItem(LS_KEY_PRIZE); 
+            const redeemedAt = localStorage.getItem(LS_KEY_REDEEMED); 
+            const savedSerial = localStorage.getItem(LS_KEY_SERIAL);
+            if (savedPrize) {
+                prizeResult.innerText = savedPrize; prizeResult.style.color = savedPrize.includes("銘謝") ? "#666" : "#b71c1c";
+                startOverlay.classList.add('hidden'); scratchArea.style.opacity = '1'; ctx.clearRect(0, 0, canvas.width, canvas.height); claimSection.classList.remove('hidden');
+                if(savedSerial) { serialDisplay.innerText = `核銷序號: ${savedSerial}`; serialDisplay.classList.remove('hidden'); }
+                if (redeemedAt) { switchToResetState(redeemedAt); } else { confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 }, colors: ['#FFD700', '#D32F2F', '#FFFFFF'] }); }
+            }
+        }
+        
+        redeemBtn.addEventListener('click', () => {
+            const prize = prizeResult.innerText;
+            const serial = localStorage.getItem(LS_KEY_SERIAL) || '';
+            triggerRedeemFlow(serial, prize, 'main');
+        });
+
+        resetGameBtn.addEventListener('click', () => {
+            showModal('重置確認', '確定要重置並讓下一位客人使用嗎？', true, () => {
+                localStorage.removeItem(LS_KEY_PRIZE); localStorage.removeItem(LS_KEY_REDEEMED); localStorage.removeItem(LS_KEY_SERIAL); location.reload();
+            });
+        });
+
+        // --- Unified Execute Redemption ---
+        async function executeRedemption(name = '', phone = '', device = '') {
+            const { serial, prize, source } = redemptionContext;
+
+            if (source === 'main') {
+                redeemBtn.classList.add('hidden'); resetGameBtn.classList.add('hidden'); redeemLoading.style.display = 'block'; 
+            } else {
+                // If remote, maybe show a global loading or alert
+                // For simplicity, we just proceed. The modal is closed.
+            }
+
+            if (API_URL.includes("YOUR_GAS_WEB_APP_URL_HERE")) {
+                setTimeout(() => { 
+                    const time = new Date().toLocaleString('zh-TW', { hour12: false });
+                    if(source === 'main') completeRedemption(time); 
+                    else alert('核銷成功 (測試)');
+                }, 1000); return;
+            }
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST', body: JSON.stringify({ action: 'redeem', prize: prize, serial: serial, name: name, phone: phone, device: device }), 
+                    redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" },
+                });
+                const data = await response.json();
+                if(data.status === 'success') { 
+                    if(source === 'main') {
+                        completeRedemption(data.time); 
+                    } else {
+                        // Refresh history list
+                        showModal('成功', '核銷成功！', false);
+                        historyLink.click(); // Re-open history to show updated status
+                    }
+                    if(typeof gtag !== 'undefined') { gtag('event', 'redemption_success', { 'prize': prize, 'device': device, 'source': source }); } 
+                } 
+                else { 
+                    showModal('核銷失敗', `錯誤：${data.message}`, false); 
+                    if(source === 'main') { redeemBtn.classList.remove('hidden'); resetGameBtn.classList.remove('hidden'); redeemLoading.style.display = 'none'; }
+                }
+            } catch (e) {
+                console.error(e); 
+                showModal('連線錯誤', '無法連接伺服器', false); 
+                if(source === 'main') { redeemBtn.classList.remove('hidden'); resetGameBtn.classList.remove('hidden'); redeemLoading.style.display = 'none'; }
+            }
+        }
+
+        function completeRedemption(timeStr) { localStorage.setItem(LS_KEY_REDEEMED, timeStr); switchToResetState(timeStr); }
+        function switchToResetState(timeStr) {
+            redeemLoading.style.display = 'none'; redeemBtn.classList.add('hidden'); resetGameBtn.classList.remove('hidden');
+            resetGameBtn.innerText = "開始新遊戲"; resetGameBtn.classList.remove('btn-gold', 'text-red-900'); resetGameBtn.classList.add('btn-reset', 'text-white'); resetGameBtn.dataset.mode = 'reset';
+            statusText.classList.add('hidden'); congratsText.innerText = "兌換完成"; congratsText.classList.remove('animate-bounce'); congratsText.style.color = '#4ade80';
+            redeemDetails.classList.remove('hidden'); redeemTime.innerText = `核銷時間: ${timeStr}`; canvas.style.pointerEvents = 'none';
         }
 
         function initCanvas() {
